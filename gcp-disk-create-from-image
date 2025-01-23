@@ -1,0 +1,14 @@
+gcloud compute disks create disk-name \
+    --image-project project-name \
+    --image image-name \
+    --size 100 \
+    --zone zone-name \
+    --type pd-standard
+
+
+gcloud compute disks create disk-name \
+    --image-project project-name \
+    --image image-name \
+    --size 100 \
+    --zone zone-name \
+    --type pd-ssd
