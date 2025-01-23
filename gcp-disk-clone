@@ -1,0 +1,1 @@
+gcloud compute disks create disk-name --source-disk=projects/project-name/zones/zone-name/disks/disk-name --source-disk-zone=zone-name --type=pd-standard
