@@ -1,0 +1,72 @@
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+Question :  
+a. Install Apache Server on Nautilus Backup Server and configure it to use 6000 port (do not bind it to 127.0.0.1 only, keep it default i.e let Apache listen on server's IP, hostname, localhost, 127.0.0.1 etc).
+
+b. Install Nginx webserver on Nautilus Backup Server and configure it to use 8095.
+
+c. Configure Nginx as a reverse proxy server for Apache.
+
+d. There is a sample index file /home/index.html on Jump Host, copy that file to Apache's document root.
+
+e. Make sure to start Apache and Nginx services.
+
+f. You can test final changes using curl command, e.g curl http://<backup server IP or Hostname>:8095.
+
+
+
+Solution:  
+
+1. At first copy sample index file from jump server to backup server
+
+scp /home/index.html clint@stbkp01:/tmp/
+
+
+2. Login on Backup server  
+
+ssh clint@stbkp01
+
+sudo su -
+
+
+3. Install the packages Apache & Nginx. 
+
+yum install httpd
+
+yum install epel-release
+
+yum install  nginx
+
+
+5. Edit the httpd.conf & change the Listen port from 80 to 6000 
+
+
+vi /etc/httpd/httpd/config
+
+cat /etc/httpd/conf/httpd.conf |grep 6000
+
+
+
+6. Edit Nginx file and do the below changes ( Refer video for more details )
+
+vi /etc/nginx/nginx.conf
+
+
+
+7.  Copy the index.html file from /tmp to /var/www/html/
+
+cp /tmp/index.html /var/www/html/
+
+
+8. Start the httpd and nginx services 
+
+systemctl start httpd
+systemctl start nginx
+
+
+9. validate the task by below commands 
+
+	curl http://172.16.238.16:8095
+
+	curl http://172.16.238.16:6000
+

@@ -1,0 +1,163 @@
+Question : The production support team of xFusionCorp Industries is working on developing some bash scripts to automate different day to day tasks. One is to create a bash script for taking websites backup. They have a static website running on App Server 2 in Stratos Datacenter, and they need to create a bash script named ecommerce_backup.sh which should accomplish the following tasks. (Also remember to place the script under /scripts directory on App Server 2)
+
+a. Create a zip archive named xfusioncorp_ecommerce.zip of /var/www/html/ecommerce directory.
+
+b. Save the archive in /backup/ on App Server 2. This is a temporary storage, as backups from this location will be clean on weekly basis. Therefore, we also need to save this backup archive on Nautilus Backup Server.
+
+c. Copy the created archive to Nautilus Backup Server server in /backup/ location.
+
+d. Please make sure script won't ask for password while copying the archive file. Additionally, the respective server user (for example, tony in case of App Server 1) must be able to run it.
+
+CheckCompleteIncomplete Try Later
+
+Please Note:-  Perform the below commands based on your question server,  user name & other details that might differ as per the task.
+
+
+
+Solution : 
+
+1. At first login to app as per your task
+
+thor@jump_host ~$ ssh steve@stapp02
+
+
+2. Then go to the scripts folder and create a backup script 
+
+    (Note - Please change the file name and folder as per your task)
+
+[steve@stapp02 ~]$ vi /scripts/ecommerce_backup.sh
+
+[steve@stapp02 ~]$ cat  /scripts/ecommerce_backup.sh
+
+#!/bin/bash
+
+zip -r /backup/xfusioncorp_ecommerce.zip /var/www/html/ecommerce
+
+scp /backup/xfusioncorp_ecommerce.zip clint@stbkp01:/backup
+
+
+
+3. Then create a keygen and copy the key to the backup server so that the bash script will not require any password  
+
+[steve@stapp02 ~]$ ssh-keygen
+
+Generating public/private rsa key pair.
+
+Enter file in which to save the key (/home/steve/.ssh/id_rsa):
+
+Created directory '/home/steve/.ssh'.
+
+Enter passphrase (empty for no passphrase):
+
+Enter same passphrase again:
+
+Your identification has been saved in /home/steve/.ssh/id_rsa.
+
+Your public key has been saved in /home/steve/.ssh/id_rsa.pub.
+
+The key fingerprint is:
+
+SHA256:mOG3KqteWkQic1xrRis58u3M2wZX1WWglaZif/nmUfM steve@stapp02.stratos.xfusioncorp.com
+
+The key's randomart image is:
+
++---[RSA 2048]----+
+
+|    o      .o+o  |
+
+| . + o    .o+.   |
+
+|+ B * .  ..o     |
+
+| * O . ++ .      |
+
+|  . o +oSo   . ..|
+
+|   =. .. .. o  .o|
+
+|    *o  .  . .. E|
+
+|   +.o..      o. |
+
+| .+.o+o      o.  |
+
++----[SHA256]-----+
+
+
+
+4. Copy the key on the backup server & cross-check login without password prompt
+
+[steve@stapp02 ~]$ ssh-copy-id clint@stbkp01
+
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/steve/.ssh/id_rsa.pub"
+
+The authenticity of host 'stbkp01 (172.16.238.16)' can't be established.
+
+ECDSA key fingerprint is SHA256:/CoLlfiO0ePR2hdrI9rlk7iqMffOtKQAgLBG8sRosdA.
+
+ECDSA key fingerprint is MD5:74:75:cf:45:51:9f:9b:f5:7e:75:64:91:dd:ac:46:6d.
+
+Are you sure you want to continue connecting (yes/no)? yes
+
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+
+clint@stbkp01's password:
+
+ Number of key(s) added: 1
+
+ Now try logging into the machine, with:   "ssh 'clint@stbkp01'"
+
+and check to make sure that only the key(s) you wanted were added.
+
+ [steve@stapp02 ~]$ ssh clint@stbkp01
+
+
+
+[clint@stbkp01 ~]$ logout
+
+Connection to stbkp01 closed.
+
+
+
+
+5.  Finally go to scripts folder and run the bash scripts by this command
+
+     ( Refer below video for more clarity )     
+
+[steve@stapp02 scripts]$ sh ecommerce_backup.sh
+
+  adding: var/www/html/ecommerce/ (stored 0%)
+
+  adding: var/www/html/ecommerce/index.html (stored 0%)
+
+  adding: var/www/html/ecommerce/.gitkeep (stored 0%)
+
+xfusioncorp_ecommerce.zip                                                           100%  623     2.1MB/s   00:00   
+
+
+
+
+6. Now you can check the backup folder for the zip file on both app02 and backup server. If you find the zip file then it should be done.
+
+[steve@stapp02 scripts]$ ll /backup
+
+total 4
+
+-rw-rw-r-- 1 steve steve 623 Jul 18 14:22 xfusioncorp_ecommerce.zip
+
+
+
+[steve@stapp02 scripts]$ ssh clint@stbkp01
+
+Last login: Sun Jul 18 14:21:17 2021 from stapp02
+
+
+
+[clint@stbkp01 ~]$ ll /backup
+
+total 4
+
+-rw-rw-r-- 1 clint clint 623 Jul 18 14:22 xfusioncorp_ecommerce.zip
+

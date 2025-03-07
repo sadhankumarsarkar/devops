@@ -1,0 +1,42 @@
+Question :  The system admins team of xFusionCorp Industries has noticed intermittent issues with DNS resolution in several apps . App Server 3 in Stratos Datacenter is having some DNS resolution issues, so we want to add some additional DNS nameservers on this server.
+As a temporary fix we have decided to go with Google public DNS (ipv4). Please make appropriate changes on this server.
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+1. At first login to app server  & Switch to  root user 
+
+thor@jump_host ~$ ssh banner@stapp03
+
+[banner@stapp03 ~]$ sudo su -
+
+[root@stapp03 ~]#
+
+
+3.  Verify the existing  resolve.conf file  
+
+[root@stapp03 ~]# cat /etc/resolv.conf
+
+search stratos.xfusioncorp.com
+
+nameserver 127.0.0.11
+
+options ndots:0
+
+
+
+4.  Edit the  resolv.conf  file and add public DNS 8.8.8.8 as per task.
+
+[root@stapp03 ~]# vi /etc/resolv.conf
+
+[root@stapp03 ~]# cat /etc/resolv.conf
+
+search stratos.xfusioncorp.com
+
+nameserver 127.0.0.11
+
+nameserver 8.8.8.8
+
+options ndots:0
+

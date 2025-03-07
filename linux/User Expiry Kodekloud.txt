@@ -1,0 +1,8 @@
+Linux User Expiry Kodekloud
+
+
+ssh banner@stapp03
+
+sudo useradd -e 2021-01-28 javed
+
+sudo chage -l javed

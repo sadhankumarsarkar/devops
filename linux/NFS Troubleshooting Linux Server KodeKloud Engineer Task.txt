@@ -1,0 +1,260 @@
+Question :  The Nautilus production support team was trying to fix issues with their storage server.
+The storage server has a shared directory /opt, which is mounted on all app servers at location /var/www/html 
+so that whatever data they store on storage server under /opt can be shared among all app servers. Somehow NFS server is broken and having some issues.
+
+Identify the root cause of the issue and fix it to make sure sharing works fine among all app servers and storage server.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ as per the task.
+
+
+Solution:  
+1. At first login to one storage server &  Switch to  root user 
+
+thor@jump_host /$ ssh natasha@ststor01
+[natasha@ststor01 ~]$ sudo su -
+
+2.  Verify the status of NFS & RPC  service :        
+
+[root@ststor01 ~]# systemctl status nfs-server
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; disabled; vendor preset: disabled)
+
+   Active: inactive (dead)
+
+
+[root@ststor01 ~]# systemctl status rpcbind
+
+● rpcbind.service - RPC bind service
+
+   Loaded: loaded (/usr/lib/systemd/system/rpcbind.service; enabled; vendor preset: enabled)
+
+   Active: active (running) since Sun 2021-07-04 07:11:23 UTC; 5min ago
+
+  Process: 61 ExecStart=/sbin/rpcbind -w $RPCBIND_ARGS (code=exited, status=0/SUCCESS)
+
+ Main PID: 92 (rpcbind)
+
+   CGroup: /docker/8408db8d678a85dc7ce9f50696623680a60311a8f4a83ad06a8d09b6c8d4ff21/system.slice/rpcbind.service
+
+           └─92 /sbin/rpcbind -w
+
+ Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: rpcbind.service changed dead -> start
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: Starting RPC bind service...
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[61]: Executing: /sbin/rpcbind -w
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: Child 61 belongs to rpcbind.service
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: rpcbind.service: control process exited, code=exited status=0
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: rpcbind.service got final SIGCHLD for state start
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: Main PID guessed: 92
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: rpcbind.service changed start -> running
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: Job rpcbind.service/start finished, result=done
+
+Jul 04 07:11:23 ststor01.stratos.xfusioncorp.com systemd[1]: Started RPC bind service.
+
+
+
+3.  Edit the export file and correct the changes as per below
+
+    Note : - Mountpoint would differ so please check your task
+
+
+[root@ststor01 ~]# cat /etc/exports
+
+/data 172.16.238.11,172.16.238.12, 172.16.238.13(rw,sync,no_subtree_check,no_root_squash,fsid=0)
+
+
+
+[root@ststor01 ~]# vi /etc/exports
+
+[root@ststor01 ~]# cat /etc/exports
+
+/opt  172.16.238.10(rw,sync,no_subtree_check,no_root_squash,fsid=0)
+
+/opt   172.16.238.11(rw,sync,no_subtree_check,no_root_squash,fsid=0)
+
+/opt   172.16.238.12(rw,sync,no_subtree_check,no_root_squash,fsid=0)
+
+
+
+
+4. Start service: systemctl start nfs-server && systemctl status nfs-server
+
+[root@ststor01 ~]#  systemctl start nfs-server && systemctl status nfs-server
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; disabled; vendor preset: disabled)
+
+   Active: active (exited) since Sun 2021-07-04 07:32:52 UTC; 6ms ago
+
+  Process: 500 ExecStartPost=/bin/sh -c if systemctl -q is-active gssproxy; then systemctl reload gssproxy ; fi (code=exited, status=0/SUCCESS)
+
+  Process: 499 ExecStart=/usr/sbin/rpc.nfsd $RPCNFSDARGS (code=exited, status=0/SUCCESS)
+
+  Process: 498 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+
+ Main PID: 499 (code=exited, status=0/SUCCESS)
+
+   CGroup: /docker/eb8545605d51359a3de1c0852a9ee8369adae58cbb407dd35307135dd9a6a435/system.slice/nfs-server.service
+
+ Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: About to execute: /usr/sbin/rpc.nfsd $RPCNFSDARGS
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: Forked /usr/sbin/rpc.nfsd as 499
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: nfs-server.service changed start-pre -> start
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[499]: Executing: /usr/sbin/rpc.nfsd 8
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: Child 499 belongs to nfs-server.service
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: nfs-server.service: main process exited, code=exited, sta...CESS
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: About to execute: /bin/sh -c 'if systemctl -q is-active g... fi'
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: Forked /bin/sh as 500
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[1]: nfs-server.service changed start -> start-post
+
+Jul 04 07:32:52 ststor01.stratos.xfusioncorp.com systemd[500]: Executing: /bin/sh -c 'if systemctl -q is-active gsspro... fi'
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+5. After  changes  validate exports file are correct
+
+[root@ststor01 ~]# exportfs -av
+
+exporting 172.16.238.10:/opt
+
+exporting 172.16.238.11:/opt
+
+exporting 172.16.238.12:/opt
+
+
+
+[root@ststor01 ~]# showmount -e ststor01
+
+Export list for ststor01:
+
+/opt 172.16.238.12,172.16.238.11,172.16.238.10
+
+
+
+Now Login to the the APP Server and mount the file system
+
+1. At first login to one of the App server &  Switch to  root user 
+
+
+thor@jump_host /$ ssh tony@stapp01
+
+[tony@stapp01 ~]$ sudo su -
+
+2.  Start service: systemctl start nfs-server && systemctl start rpcbind
+
+
+[root@stapp01 ~]# systemctl start nfs-server && systemctl start rpcbind
+
+
+[root@stapp01 ~]# systemctl status nfs-server && systemctl status rpcbind
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; disabled; vendor preset: disabled)
+
+   Active: active (exited) since Sun 2021-07-04 07:38:25 UTC; 22s ago
+
+  Process: 416 ExecStartPost=/bin/sh -c if systemctl -q is-active gssproxy; then systemctl reload gssproxy ; fi (code=exited, status=0/SUCCESS)
+
+  Process: 415 ExecStart=/usr/sbin/rpc.nfsd $RPCNFSDARGS (code=exited, status=0/SUCCESS)
+
+  Process: 414 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+
+ Main PID: 415 (code=exited, status=0/SUCCESS)
+
+   CGroup: /docker/14134b4d109aa4c604136c9f4f44e339da02b8ccdc0e9e3407457409ec09a06c/system.slice/nfs-server.service
+
+ Jul 04 07:38:25 stapp01.stratos.xfusioncorp.com systemd[1]: Starting NFS server and services...
+
+Jul 04 07:38:25 stapp01.stratos.xfusioncorp.com systemd[1]: Started NFS server and services.
+
+● rpcbind.service - RPC bind service
+
+   Loaded: loaded (/usr/lib/systemd/system/rpcbind.service; enabled; vendor preset: enabled)
+
+   Active: active (running) since Sun 2021-07-04 07:29:32 UTC; 9min ago
+
+  Process: 64 ExecStart=/sbin/rpcbind -w $RPCBIND_ARGS (code=exited, status=0/SUCCESS)
+
+ Main PID: 67 (rpcbind)
+
+   CGroup: /docker/14134b4d109aa4c604136c9f4f44e339da02b8ccdc0e9e3407457409ec09a06c/system.slice/rpcbind.service
+
+           └─67 /sbin/rpcbind -w
+
+ Jul 04 07:29:32 stapp01.stratos.xfusioncorp.com systemd[1]: Starting RPC bind service...
+
+Jul 04 07:29:32 stapp01.stratos.xfusioncorp.com systemd[1]: Started RPC bind service.
+
+
+
+3.  Validate the export list on app server
+
+
+[root@stapp01 ~]# showmount -e ststor01
+
+Export list for ststor01:
+
+/opt   172.16.238.12,172.16.238.11,172.16.238.10
+
+
+
+
+4. Mount  the file system as per the destination mount point
+
+[root@stapp01 ~]# mount -t nfs ststor01:/opt   /var/www/html
+
+
+
+5. Validate  mount point  mounted successfully as per the task request
+
+
+[root@stapp01 ~]# df -h
+
+Filesystem                   Size  Used Avail Use% Mounted on
+
+overlay                      191G   36G  145G  20% /
+
+tmpfs                         64M     0   64M   0% /dev
+
+/dev/mapper/host01--vg-root  191G   36G  145G  20% /etc/hosts
+
+shm                           64M     0   64M   0% /dev/shm
+
+tmpfs                        2.0G     0  2.0G   0% /sys/fs/cgroup
+
+tmpfs                        2.0G  8.5M  2.0G   1% /run
+
+tmpfs                        395M     0  395M   0% /run/user/0
+
+ststor01:/opt            191G   36G  145G  20% /var/www/html
+
+
+
+[root@stapp01 ~]# mount |grep appdata
+
+ststor01:/opt on /var/www/html type nfs (rw,relatime,vers=3,rsize=524288,wsize=524288,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=172.16.238.15,mountvers=3,mountport=20048,mountproto=udp,local_lock=none,addr=172.16.238.15)
+
+
+
+
+Please Note :- Showed only for stapp01 have to do this in all app server stapp01,stapp02, stapp03. 

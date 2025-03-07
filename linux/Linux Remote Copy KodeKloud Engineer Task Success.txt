@@ -1,0 +1,37 @@
+Question :   One of the Nautilus developers has copied confidential data on the jump host in Stratos DC. That data must be copied to one of the app servers. Because developers do not have access to app servers, they asked the system admins team to accomplish the task for them.
+
+Copy /tmp/nautilus.txt.gpg file from jump server to App Server 3 at location /home/webdata.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+1. At first scp the file to stapp03 ( Please refer server as per given in your task)    
+
+thor@jump_host ~$ ll /tmp/nautilus.txt.gpg
+
+-rw-r--r-- 1 root root 74 Jun 26 15:16 /tmp/nautilus.txt.gpg
+
+
+thor@jump_host ~$ sudo scp /tmp/nautilus.txt.gpg  banner@stapp03:/tmp/
+
+
+2. Login on app server & switch to root user
+
+thor@jump_host ~$ ssh banner@stapp03
+
+[banner@stapp03 ~]$ sudo su -
+
+
+3. post copied, move file from /tmp location  to correct location ( /home/webdata/)
+
+[root@stapp03 ~]# mv /tmp/nautilus.txt.gpg  /home/webdata/
+
+
+[root@stapp03 ~]# ll /home/webdata/
+
+total 4
+
+-rw-r--r-- 1 banner banner 74 Jun 26 15:18 nautilus.txt.gpg
+

@@ -1,0 +1,531 @@
+Question :  The xFusionCorp Industries security team recently did a security audit of their infrastructure and came up with ideas to improve the application and server security. They decided to use SElinux for an additional security layer. They are still planning how they will implement it; however, they have decided to start testing with app servers, so based on the recommendations they have the following requirements:
+
+Install the required packages of SElinux on App server 3 in Stratos Datacenter and disable it permanently for now; it will be enabled after making some required configuration changes on this host. Don't worry about rebooting the server as there is already a reboot scheduled for tonight's maintenance window. Also ignore the status of SElinux command line right now; the final status after reboot should be disabled.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solutions :
+
+1. At first login on storage server & Switch to  root user 
+
+thor@jump_host /$ ssh  banner@stapp03
+
+[banner@stapp03 ~]$ sudo su -
+
+2. Install the SElinux 
+
+[root@stapp03 ~]# yum -y install selinux*
+
+Loaded plugins: fastestmirror, ovl
+
+Loading mirror speeds from cached hostfile
+
+ * base: linux.darkpenguin.net
+
+ * extras: mirror.checkdomain.de
+
+ * updates: ftp.plusline.net
+
+Resolving Dependencies
+
+--> Running transaction check
+
+---> Package selinux-policy.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Processing Dependency: policycoreutils >= 2.5-24 for package: selinux-policy-3.13.1-268.el7_9.2.noarch
+
+---> Package selinux-policy-devel.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Processing Dependency: policycoreutils-devel >= 2.5-24 for package: selinux-policy-devel-3.13.1-268.el7_9.2.noarch
+
+--> Processing Dependency: checkpolicy >= 2.5-8 for package: selinux-policy-devel-3.13.1-268.el7_9.2.noarch
+
+--> Processing Dependency: m4 for package: selinux-policy-devel-3.13.1-268.el7_9.2.noarch
+
+--> Processing Dependency: /usr/bin/make for package: selinux-policy-devel-3.13.1-268.el7_9.2.noarch
+
+---> Package selinux-policy-doc.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Processing Dependency: /usr/bin/xdg-open for package: selinux-policy-doc-3.13.1-268.el7_9.2.noarch
+
+---> Package selinux-policy-minimum.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Processing Dependency: policycoreutils-python >= 2.5-24 for package: selinux-policy-minimum-3.13.1-268.el7_9.2.noarch
+
+---> Package selinux-policy-mls.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Processing Dependency: policycoreutils-newrole >= 2.5-24 for package: selinux-policy-mls-3.13.1-268.el7_9.2.noarch
+
+--> Processing Dependency: setransd for package: selinux-policy-mls-3.13.1-268.el7_9.2.noarch
+
+---> Package selinux-policy-sandbox.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+---> Package selinux-policy-targeted.noarch 0:3.13.1-268.el7_9.2 will be installed
+
+--> Running transaction check
+
+---> Package checkpolicy.x86_64 0:2.5-8.el7 will be installed
+
+---> Package m4.x86_64 0:1.4.16-10.el7 will be installed
+
+---> Package make.x86_64 1:3.82-24.el7 will be installed
+
+---> Package mcstrans.x86_64 0:0.3.4-5.el7 will be installed
+
+---> Package policycoreutils.x86_64 0:2.5-34.el7 will be installed
+
+--> Processing Dependency: libselinux-utils >= 2.5-14 for package: policycoreutils-2.5-34.el7.x86_64
+
+---> Package policycoreutils-devel.x86_64 0:2.5-34.el7 will be installed
+
+---> Package policycoreutils-newrole.x86_64 0:2.5-34.el7 will be installed
+
+---> Package policycoreutils-python.x86_64 0:2.5-34.el7 will be installed
+
+--> Processing Dependency: setools-libs >= 3.3.8-4 for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libsemanage-python >= 2.5-14 for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: audit-libs-python >= 2.1.3-4 for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: python-IPy for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libselinux-python for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libqpol.so.1(VERS_1.4)(64bit) for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libqpol.so.1(VERS_1.2)(64bit) for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libcgroup for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libapol.so.4(VERS_4.0)(64bit) for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libqpol.so.1()(64bit) for package: policycoreutils-python-2.5-34.el7.x86_64
+
+--> Processing Dependency: libapol.so.4()(64bit) for package: policycoreutils-python-2.5-34.el7.x86_64
+
+---> Package xdg-utils.noarch 0:1.1.0-0.17.20120809git.el7 will be installed
+
+--> Processing Dependency: which for package: xdg-utils-1.1.0-0.17.20120809git.el7.noarch
+
+--> Processing Dependency: desktop-file-utils for package: xdg-utils-1.1.0-0.17.20120809git.el7.noarch
+
+--> Running transaction check
+
+---> Package audit-libs-python.x86_64 0:2.8.5-4.el7 will be installed
+
+--> Processing Dependency: audit-libs(x86-64) = 2.8.5-4.el7 for package: audit-libs-python-2.8.5-4.el7.x86_64
+
+---> Package desktop-file-utils.x86_64 0:0.23-2.el7 will be installed
+
+--> Processing Dependency: emacs-filesystem for package: desktop-file-utils-0.23-2.el7.x86_64
+
+---> Package libcgroup.x86_64 0:0.41-21.el7 will be installed
+
+---> Package libselinux-python.x86_64 0:2.5-15.el7 will be installed
+
+--> Processing Dependency: libselinux(x86-64) = 2.5-15.el7 for package: libselinux-python-2.5-15.el7.x86_64
+
+---> Package libselinux-utils.x86_64 0:2.5-15.el7 will be installed
+
+---> Package libsemanage-python.x86_64 0:2.5-14.el7 will be installed
+
+---> Package python-IPy.noarch 0:0.75-6.el7 will be installed
+
+---> Package setools-libs.x86_64 0:3.3.8-4.el7 will be installed
+
+---> Package which.x86_64 0:2.20-7.el7 will be installed
+
+--> Running transaction check
+
+---> Package audit-libs.x86_64 0:2.8.4-4.el7 will be updated
+
+---> Package audit-libs.x86_64 0:2.8.5-4.el7 will be an update
+
+---> Package emacs-filesystem.noarch 1:24.3-23.el7 will be installed
+
+---> Package libselinux.x86_64 0:2.5-14.1.el7 will be updated
+
+---> Package libselinux.x86_64 0:2.5-15.el7 will be an update
+
+--> Finished Dependency Resolution
+
+ 
+
+Dependencies Resolved
+
+ 
+
+============================================================================================
+
+ Package                     Arch       Version                           Repository   Size
+
+============================================================================================
+
+Installing:
+
+ selinux-policy              noarch     3.13.1-268.el7_9.2                updates     498 k
+
+ selinux-policy-devel        noarch     3.13.1-268.el7_9.2                updates     1.7 M
+
+ selinux-policy-doc          noarch     3.13.1-268.el7_9.2                updates     2.9 M
+
+ selinux-policy-minimum      noarch     3.13.1-268.el7_9.2                updates     7.0 M
+
+ selinux-policy-mls          noarch     3.13.1-268.el7_9.2                updates     5.1 M
+
+ selinux-policy-sandbox      noarch     3.13.1-268.el7_9.2                updates     502 k
+
+ selinux-policy-targeted     noarch     3.13.1-268.el7_9.2                updates     7.0 M
+
+Installing for dependencies:
+
+ audit-libs-python           x86_64     2.8.5-4.el7                       base         76 k
+
+ checkpolicy                 x86_64     2.5-8.el7                         base        295 k
+
+ desktop-file-utils          x86_64     0.23-2.el7                        base         67 k
+
+ emacs-filesystem            noarch     1:24.3-23.el7                     base         58 k
+
+ libcgroup                   x86_64     0.41-21.el7                       base         66 k
+
+ libselinux-python           x86_64     2.5-15.el7                        base        236 k
+
+ libselinux-utils            x86_64     2.5-15.el7                        base        151 k
+
+ libsemanage-python          x86_64     2.5-14.el7                        base        113 k
+
+ m4                          x86_64     1.4.16-10.el7                     base        256 k
+
+ make                        x86_64     1:3.82-24.el7                     base        421 k
+
+ mcstrans                    x86_64     0.3.4-5.el7                       base        116 k
+
+ policycoreutils             x86_64     2.5-34.el7                        base        917 k
+
+ policycoreutils-devel       x86_64     2.5-34.el7                        base        335 k
+
+ policycoreutils-newrole     x86_64     2.5-34.el7                        base        172 k
+
+ policycoreutils-python      x86_64     2.5-34.el7                        base        457 k
+
+ python-IPy                  noarch     0.75-6.el7                        base         32 k
+
+ setools-libs                x86_64     3.3.8-4.el7                       base        620 k
+
+ which                       x86_64     2.20-7.el7                        base         41 k
+
+ xdg-utils                   noarch     1.1.0-0.17.20120809git.el7        base         70 k
+
+Updating for dependencies:
+
+ audit-libs                  x86_64     2.8.5-4.el7                       base        102 k
+
+ libselinux                  x86_64     2.5-15.el7                        base        162 k
+
+ 
+
+Transaction Summary
+
+============================================================================================
+
+Install  7 Packages (+19 Dependent packages)
+
+Upgrade             (  2 Dependent packages)
+
+ 
+
+Total download size: 29 M
+
+Downloading packages:
+
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+
+(1/28): audit-libs-python-2.8.5-4.el7.x86_64.rpm                     |  76 kB  00:00:00    
+
+(2/28): audit-libs-2.8.5-4.el7.x86_64.rpm                            | 102 kB  00:00:00    
+
+(3/28): checkpolicy-2.5-8.el7.x86_64.rpm                             | 295 kB  00:00:00    
+
+(4/28): desktop-file-utils-0.23-2.el7.x86_64.rpm                     |  67 kB  00:00:00    
+
+(5/28): emacs-filesystem-24.3-23.el7.noarch.rpm                      |  58 kB  00:00:00    
+
+(6/28): libcgroup-0.41-21.el7.x86_64.rpm                             |  66 kB  00:00:00    
+
+(7/28): libselinux-2.5-15.el7.x86_64.rpm                             | 162 kB  00:00:00    
+
+(8/28): libselinux-utils-2.5-15.el7.x86_64.rpm                       | 151 kB  00:00:00    
+
+(9/28): libselinux-python-2.5-15.el7.x86_64.rpm                      | 236 kB  00:00:00    
+
+(10/28): libsemanage-python-2.5-14.el7.x86_64.rpm                    | 113 kB  00:00:00    
+
+(11/28): m4-1.4.16-10.el7.x86_64.rpm                                 | 256 kB  00:00:00    
+
+(12/28): make-3.82-24.el7.x86_64.rpm                                 | 421 kB  00:00:00    
+
+(13/28): policycoreutils-2.5-34.el7.x86_64.rpm                       | 917 kB  00:00:00    
+
+(14/28): mcstrans-0.3.4-5.el7.x86_64.rpm                             | 116 kB  00:00:00    
+
+(15/28): policycoreutils-devel-2.5-34.el7.x86_64.rpm                 | 335 kB  00:00:00    
+
+(16/28): policycoreutils-newrole-2.5-34.el7.x86_64.rpm               | 172 kB  00:00:00    
+
+(17/28): policycoreutils-python-2.5-34.el7.x86_64.rpm                | 457 kB  00:00:00    
+
+(18/28): python-IPy-0.75-6.el7.noarch.rpm                            |  32 kB  00:00:00    
+
+(19/28): selinux-policy-3.13.1-268.el7_9.2.noarch.rpm                | 498 kB  00:00:00    
+
+(20/28): selinux-policy-devel-3.13.1-268.el7_9.2.noarch.rpm          | 1.7 MB  00:00:00    
+
+(21/28): selinux-policy-minimum-3.13.1-268.el7_9.2.noarch.rpm        | 7.0 MB  00:00:00    
+
+(22/28): selinux-policy-doc-3.13.1-268.el7_9.2.noarch.rpm            | 2.9 MB  00:00:00    
+
+(23/28): selinux-policy-sandbox-3.13.1-268.el7_9.2.noarch.rpm        | 502 kB  00:00:00    
+
+(24/28): setools-libs-3.3.8-4.el7.x86_64.rpm                         | 620 kB  00:00:00    
+
+(25/28): selinux-policy-mls-3.13.1-268.el7_9.2.noarch.rpm            | 5.1 MB  00:00:00    
+
+(26/28): xdg-utils-1.1.0-0.17.20120809git.el7.noarch.rpm             |  70 kB  00:00:00    
+
+(27/28): which-2.20-7.el7.x86_64.rpm                                 |  41 kB  00:00:00    
+
+(28/28): selinux-policy-targeted-3.13.1-268.el7_9.2.noarch.rpm       | 7.0 MB  00:00:00    
+
+--------------------------------------------------------------------------------------------
+
+Total                                                        45 MB/s |  29 MB  00:00:00    
+
+Running transaction check
+
+Running transaction test
+
+Transaction test succeeded
+
+Running transaction
+
+  Updating   : libselinux-2.5-15.el7.x86_64                                            1/30
+
+  Updating   : audit-libs-2.8.5-4.el7.x86_64                                           2/30
+
+  Installing : 1:make-3.82-24.el7.x86_64                                               3/30
+
+  Installing : checkpolicy-2.5-8.el7.x86_64                                            4/30
+
+  Installing : audit-libs-python-2.8.5-4.el7.x86_64                                    5/30
+
+  Installing : libselinux-utils-2.5-15.el7.x86_64                                      6/30
+
+  Installing : policycoreutils-2.5-34.el7.x86_64                                       7/30
+
+  Installing : selinux-policy-3.13.1-268.el7_9.2.noarch                                8/30
+
+  Installing : selinux-policy-targeted-3.13.1-268.el7_9.2.noarch                       9/30
+
+  Installing : policycoreutils-newrole-2.5-34.el7.x86_64                              10/30
+
+  Installing : setools-libs-3.3.8-4.el7.x86_64                                        11/30
+
+  Installing : libselinux-python-2.5-15.el7.x86_64                                    12/30
+
+  Installing : mcstrans-0.3.4-5.el7.x86_64                                            13/30
+
+  Installing : libcgroup-0.41-21.el7.x86_64                                           14/30
+
+  Installing : libsemanage-python-2.5-14.el7.x86_64                                   15/30
+
+  Installing : python-IPy-0.75-6.el7.noarch                                           16/30
+
+  Installing : policycoreutils-python-2.5-34.el7.x86_64                               17/30
+
+  Installing : which-2.20-7.el7.x86_64                                                18/30
+
+install-info: No such file or directory for /usr/share/info/which.info.gz
+
+  Installing : m4-1.4.16-10.el7.x86_64                                                19/30
+
+  Installing : policycoreutils-devel-2.5-34.el7.x86_64                                20/30
+
+  Installing : selinux-policy-devel-3.13.1-268.el7_9.2.noarch                         21/30
+
+  Installing : 1:emacs-filesystem-24.3-23.el7.noarch                                  22/30
+
+  Installing : desktop-file-utils-0.23-2.el7.x86_64                                   23/30
+
+  Installing : xdg-utils-1.1.0-0.17.20120809git.el7.noarch                            24/30
+
+  Installing : selinux-policy-doc-3.13.1-268.el7_9.2.noarch                           25/30
+
+  Installing : selinux-policy-minimum-3.13.1-268.el7_9.2.noarch                       26/30
+
+  Installing : selinux-policy-mls-3.13.1-268.el7_9.2.noarch                           27/30
+
+  Installing : selinux-policy-sandbox-3.13.1-268.el7_9.2.noarch                       28/30
+
+  Cleanup    : audit-libs-2.8.4-4.el7.x86_64                                          29/30
+
+  Cleanup    : libselinux-2.5-14.1.el7.x86_64                                         30/30
+
+  Verifying  : selinux-policy-sandbox-3.13.1-268.el7_9.2.noarch                        1/30
+
+  Verifying  : libselinux-2.5-15.el7.x86_64                                            2/30
+
+  Verifying  : 1:emacs-filesystem-24.3-23.el7.noarch                                   3/30
+
+  Verifying  : xdg-utils-1.1.0-0.17.20120809git.el7.noarch                             4/30
+
+  Verifying  : desktop-file-utils-0.23-2.el7.x86_64                                    5/30
+
+  Verifying  : m4-1.4.16-10.el7.x86_64                                                 6/30
+
+  Verifying  : selinux-policy-targeted-3.13.1-268.el7_9.2.noarch                       7/30
+
+  Verifying  : audit-libs-2.8.5-4.el7.x86_64                                           8/30
+
+  Verifying  : checkpolicy-2.5-8.el7.x86_64                                            9/30
+
+  Verifying  : selinux-policy-doc-3.13.1-268.el7_9.2.noarch                           10/30
+
+  Verifying  : policycoreutils-devel-2.5-34.el7.x86_64                                11/30
+
+  Verifying  : policycoreutils-2.5-34.el7.x86_64                                      12/30
+
+  Verifying  : which-2.20-7.el7.x86_64                                                13/30
+
+  Verifying  : python-IPy-0.75-6.el7.noarch                                           14/30
+
+  Verifying  : libselinux-utils-2.5-15.el7.x86_64                                     15/30
+
+  Verifying  : 1:make-3.82-24.el7.x86_64                                              16/30
+
+  Verifying  : setools-libs-3.3.8-4.el7.x86_64                                        17/30
+
+  Verifying  : libsemanage-python-2.5-14.el7.x86_64                                   18/30
+
+  Verifying  : selinux-policy-mls-3.13.1-268.el7_9.2.noarch                           19/30
+
+  Verifying  : selinux-policy-devel-3.13.1-268.el7_9.2.noarch                         20/30
+
+  Verifying  : policycoreutils-python-2.5-34.el7.x86_64                               21/30
+
+  Verifying  : libselinux-python-2.5-15.el7.x86_64                                    22/30
+
+  Verifying  : mcstrans-0.3.4-5.el7.x86_64                                            23/30
+
+  Verifying  : policycoreutils-newrole-2.5-34.el7.x86_64                              24/30
+
+  Verifying  : selinux-policy-3.13.1-268.el7_9.2.noarch                               25/30
+
+  Verifying  : audit-libs-python-2.8.5-4.el7.x86_64                                   26/30
+
+  Verifying  : selinux-policy-minimum-3.13.1-268.el7_9.2.noarch                       27/30
+
+  Verifying  : libcgroup-0.41-21.el7.x86_64                                           28/30
+
+  Verifying  : audit-libs-2.8.4-4.el7.x86_64                                          29/30
+
+  Verifying  : libselinux-2.5-14.1.el7.x86_64                                         30/30
+
+ 
+
+Installed:
+
+  selinux-policy.noarch 0:3.13.1-268.el7_9.2                                               
+
+  selinux-policy-devel.noarch 0:3.13.1-268.el7_9.2                                          
+
+  selinux-policy-doc.noarch 0:3.13.1-268.el7_9.2                                           
+
+  selinux-policy-minimum.noarch 0:3.13.1-268.el7_9.2                                       
+
+  selinux-policy-mls.noarch 0:3.13.1-268.el7_9.2                                           
+
+  selinux-policy-sandbox.noarch 0:3.13.1-268.el7_9.2                                       
+
+  selinux-policy-targeted.noarch 0:3.13.1-268.el7_9.2                                       
+
+ 
+
+Dependency Installed:
+
+  audit-libs-python.x86_64 0:2.8.5-4.el7        checkpolicy.x86_64 0:2.5-8.el7            
+
+  desktop-file-utils.x86_64 0:0.23-2.el7        emacs-filesystem.noarch 1:24.3-23.el7     
+
+  libcgroup.x86_64 0:0.41-21.el7                libselinux-python.x86_64 0:2.5-15.el7     
+
+  libselinux-utils.x86_64 0:2.5-15.el7          libsemanage-python.x86_64 0:2.5-14.el7    
+
+  m4.x86_64 0:1.4.16-10.el7                     make.x86_64 1:3.82-24.el7                 
+
+  mcstrans.x86_64 0:0.3.4-5.el7                 policycoreutils.x86_64 0:2.5-34.el7       
+
+  policycoreutils-devel.x86_64 0:2.5-34.el7     policycoreutils-newrole.x86_64 0:2.5-34.el7
+
+  policycoreutils-python.x86_64 0:2.5-34.el7    python-IPy.noarch 0:0.75-6.el7            
+
+  setools-libs.x86_64 0:3.3.8-4.el7             which.x86_64 0:2.20-7.el7                 
+
+  xdg-utils.noarch 0:1.1.0-0.17.20120809git.el7
+
+ 
+
+Dependency Updated:
+
+  audit-libs.x86_64 0:2.8.5-4.el7               libselinux.x86_64 0:2.5-15.el7              
+
+ 
+
+Complete!
+
+
+
+[root@stapp03 ~]#
+
+3. Check the existing  SElinux  status
+
+
+[root@stapp03 ~]# sestatus
+
+SELinux status:                 disabled
+
+[root@stapp03 ~]#
+
+[root@stapp03 ~]# cat /etc/selinux/config | grep SELINUX
+
+# SELINUX= can take one of these three values:
+
+SELINUX=enforcing
+
+# SELINUXTYPE= can take one of three values:
+
+SELINUXTYPE=targeted
+
+[root@stapp03 ~]#
+
+
+4. Edit the /etc/selinux/config  file and correct the changes as per below
+
+[root@stapp03 ~]# vi /etc/selinux/config
+
+[root@stapp03 ~]# cat /etc/selinux/config | grep SELINUX
+
+# SELINUX= can take one of these three values:
+SELINUX=disabled
+# SELINUXTYPE= can take one of three values:
+SELINUXTYPE=targeted
+
+
+5.  Validate the task by sestatus        
+
+[root@stapp03 ~]# sestatus
+
+SELinux status:                 disabled
+

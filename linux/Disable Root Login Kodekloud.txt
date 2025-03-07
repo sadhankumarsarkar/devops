@@ -1,0 +1,23 @@
+Solution:
+
+You need to disable root login in all appservers. So login to appserver 1 at first 
+
+ssh tony@stapp01
+
+sudo su
+
+vi /etc/ssh/sshd_config
+
+Press I button
+
+Uncomment by removing # in PermtiRootLogin and replace yes with no
+
+PermtiRootLogin no
+
+Save it by :wq!
+
+Then restart sshd by typing
+
+service sshd restart
+
+Next go to appserver 02 and appserver 03 and do the same thing like appserver 01

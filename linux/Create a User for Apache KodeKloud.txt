@@ -1,0 +1,21 @@
+Question:
+For some security reasons xFusionCorp Industries security team has decided to use custom Apache users for each web application hosted there rather than its default user. Since this is going to be the Apache user so it shouldn’t use the default home directory. Create the user as per requirements given below:
+
+a. Create a user named ravi on the App server 1 in Stratos Datacenter.
+
+b. Set UID to 1264 and its home directory to /var/www/ravi
+
+ 
+
+Solution: 
+
+ssh tony@stapp01
+
+sudo su -
+
+
+useradd ravi -d /var/www/ravi -u 1264
+
+cat /etc/passwd | grep ravi
+
+

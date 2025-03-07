@@ -1,0 +1,307 @@
+Question :   The backup server in the Stratos DC contains several templated XML files used by the Nautilus application. However, these template XML. files must be populated with valid data before they can be used.
+
+Replace all occurrences of the string About to Cloud on the XML file /root/nautilus.xml located in the backup server.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+1. At first login on Backup server  & Switch to  root user 
+
+
+thor@jump_host ~$ ssh clint@stbkp01
+
+[clint@stbkp01 ~]$ sudo su -
+
+
+2. Pull out the string About on the XML file /root/nautilus.xml
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About  | wc -l
+
+66
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+      <genre>About</genre>
+
+
+
+4. Replace the string  About  to Cloud with the help of sed command
+
+[root@stbkp01 ~]# sed -i 's/About/Cloud/g' /root/nautilus.xml
+
+
+
+5. confirm the change in string Cloud 
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep Cloud
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+      <genre>Cloud</genre>
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep Cloud |wc -l
+
+66
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About  | wc -l
+
+0

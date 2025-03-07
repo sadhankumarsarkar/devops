@@ -1,0 +1,168 @@
+Question :   There is a critical issue going on with the Nautilus application in Stratos DC. The production support team identified that the application is unable to connect to the database. After digging into the issue, the team found that mariadb service is down on the database server.
+Look into the issue and fix the same.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+1. At first login on database server  &  Switch to  root user 
+
+thor@jump_host ~$ ssh peter@stdb01
+[peter@stdb01 ~]$ sudo su -
+
+3. When you start the mariadb service you will get below error 
+
+[root@stdb01 ~]# systemctl status mariadb
+
+[root@stdb01 ~]# systemctl start  mariadb
+
+4. To know the detail error run status -l 
+
+ [root@stdb01 ~]# systemctl status mariadb -l
+
+● mariadb.service - MariaDB database server
+
+   Loaded: loaded (/usr/lib/systemd/system/mariadb.service; disabled; vendor preset: disabled)
+
+   Active: failed (Result: exit-code) since Tue 2021-06-15 15:14:32 UTC; 9s ago
+
+  Process: 734 ExecStartPre=/usr/libexec/mariadb-prepare-db-dir %n (code=exited, status=1/FAILURE)
+
+ 
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com mariadb-prepare-db-dir[734]: Database MariaDB is not initialized, but the directory /var/lib/mysql is not empty, so initialization cannot be done.
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: Child 734 belongs to mariadb.service
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service: control process exited, code=exited status=1
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service got final SIGCHLD for state start-pre
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service changed start-pre -> failed
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: Job mariadb.service/start finished, result=failed
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: Failed to start MariaDB database server.
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: Unit mariadb.service entered failed state.
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service failed.
+
+Jun 15 15:14:32 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service: cgroup is empty
+
+
+5. List the  MY SQL following path check ownership, groups and directory name
+  
+[root@stdb01 ~]# ll  /var/lib/
+
+total 52
+
+drwxr-xr-x 1 root  root  4096 Mar 27 05:35 alternatives
+
+drwxr-xr-x 1 root  root  4096 Mar 14  2019 dbus
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 games
+
+drwxr-xr-x 1 root  root  4096 Nov  2  2018 initramfs
+
+drwx------ 1 root  root  4096 Aug  1  2019 machines
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 misc
+
+drwxr-xr-x 2 mysql mysql 4096 Oct  1  2020 mysqld
+
+drwxr-xr-x 1 root  root  4096 Jun 15 15:11 rpm
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 rpm-state
+
+drwxr-xr-x 1 root  root  4096 Oct 15  2019 stateless
+
+drwxr-xr-x 1 root  root  4096 Aug  1  2019 systemd
+
+drwxr-xr-x 1 root  root  4096 Mar 27 05:35 yum
+
+
+5. If the Ownership is correct check the folder name & rename accordingly 
+
+[root@stdb01 ~]# mv /var/lib/mysqld/ /var/lib/mysql
+
+[root@stdb01 ~]# ll /var/lib/
+
+total 52
+
+drwxr-xr-x 1 root  root  4096 Mar 27 05:35 alternatives
+
+drwxr-xr-x 1 root  root  4096 Mar 14  2019 dbus
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 games
+
+drwxr-xr-x 1 root  root  4096 Nov  2  2018 initramfs
+
+drwx------ 1 root  root  4096 Aug  1  2019 machines
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 misc
+
+drwxr-xr-x 2 mysql mysql 4096 Oct  1  2020 mysql
+
+drwxr-xr-x 1 root  root  4096 Jun 15 15:11 rpm
+
+drwxr-xr-x 1 root  root  4096 Apr 11  2018 rpm-state
+
+drwxr-xr-x 1 root  root  4096 Oct 15  2019 stateless
+
+drwxr-xr-x 1 root  root  4096 Aug  1  2019 systemd
+
+drwxr-xr-x 1 root  root  4096 Mar 27 05:35 yum
+
+
+6. Start service: systemctl start  mariadb &&  systemctl status  mariadb
+
+[root@stdb01 ~]# systemctl start mariadb
+
+[root@stdb01 ~]# systemctl status  mariadb
+
+● mariadb.service - MariaDB database server
+
+   Loaded: loaded (/usr/lib/systemd/system/mariadb.service; disabled; vendor preset: disabled)
+
+   Active: active (running) since Tue 2021-06-15 15:26:31 UTC; 7s ago
+
+  Process: 881 ExecStartPost=/usr/libexec/mariadb-wait-ready $MAINPID (code=exited, status=0/SUCCESS)
+
+  Process: 799 ExecStartPre=/usr/libexec/mariadb-prepare-db-dir %n (code=exited, status=0/SUCCESS)
+
+ Main PID: 880 (mysqld_safe)
+
+   CGroup: /docker/1451421191fe618d281dea970b6deeec3e1fbc7dd6b57dc1a1d2df2667619f24/system.slice/mariadb.service
+
+           ├─ 880 /bin/sh /usr/bin/mysqld_safe --basedir=/usr
+
+           └─1044 /usr/libexec/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib64/mysql/plugin ...
+
+ 
+
+Jun 15 15:26:29 stdb01.stratos.xfusioncorp.com systemd[880]: Executing: /usr/bin/mysqld_safe --basedir=/usr
+
+Jun 15 15:26:29 stdb01.stratos.xfusioncorp.com systemd[881]: Executing: /usr/libexec/mariadb-wait-ready 880
+
+Jun 15 15:26:29 stdb01.stratos.xfusioncorp.com mysqld_safe[880]: 210615 15:26:29 mysqld_safe Logging to '/var/lo...g'.
+
+Jun 15 15:26:29 stdb01.stratos.xfusioncorp.com mysqld_safe[880]: 210615 15:26:29 mysqld_safe Starting mysqld dae...sql
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: Child 881 belongs to mariadb.service
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service: control process exited, code=exited ...s=0
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service got final SIGCHLD for state start-post
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: mariadb.service changed start-post -> running
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: Job mariadb.service/start finished, result=done
+
+Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: Started MariaDB database server.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+7. Click on Finish & Confirm to complete the task successful

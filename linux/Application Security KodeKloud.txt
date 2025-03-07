@@ -1,0 +1,200 @@
+Question: We have a backup management application UI hosted on Nautilus's backup server in Stratos DC. That backup management application code is deployed under Apache on the backup server itself, and Nginx is running as a reverse proxy on the same server. Apache and Nginx ports are 3000 and 8094, respectively. We have iptables firewall installed on this server. Make the appropriate changes to fulfill the requirements mentioned below:
+
+We want to open all incoming connections to Nginx's port and block all incoming connections to Apache's port. Also make sure rules are permanent.
+
+Please Note:-  Perform the below commands based on your question server,  user name & other details that might differ as per the task.
+
+
+Solution:  
+
+1. At first login on Backup server &  Switch to  root user 
+
+thor@jump_host ~$ ssh clint@stbkp01
+
+[clint@stbkp01 ~]$ sudo su -
+
+
+2. Run Below command to check Iptables  service installed and running status    
+
+[root@stbkp01 ~]# systemctl status iptables
+
+● iptables.service - IPv4 firewall with iptables
+
+   Loaded: loaded (/usr/lib/systemd/system/iptables.service; disabled; vendor preset: disabled)
+
+   Active: inactive (dead)
+
+
+
+
+3. Please check port no as per your task
+
+[root@stbkp01 ~]# ss -tlnp |grep http
+
+LISTEN     0      511          *:3000                     *:*                   users:(("httpd",pid=649,fd=3),("httd",pid=648,fd=3),("httpd",pid=647,fd=3),("httpd",pid=646,fd=3),("httpd",pid=645,fd=3),("httpd",pid=644,fd=3))
+
+
+
+[root@stbkp01 ~]# ss -tlnp |grep nginx
+
+LISTEN     0      511          *:8094                     *:*                   users:(("nginx",pid=714,fd=6),("nginx",pid=713,fd=6),("nginx",pid=712,fd=6),("nginx",pid=711,fd=6),("nginx",pid=710,fd=6),("nginx",pid=709,fd=6),("ngin",pid=708,fd=6),("nginx",pid=707,fd=6),("nginx",pid=706,fd=6),("nginx",pid=705,fd=6),("nginx",pid=704,fd=6),("nginx",pid=703,fd=6),("nginx",pid=702,fd=6),("nginx",pid=701,fd=6),("nginx",pid=700,fd=6),("nginx",pid=699,fd=6),("nginx",pid=698,fd=6),("nginx",pid=697,fd=6),("nginx",pid=696,fd=6),("nginx",pid=695,fd=6),("nginx",pid=694,fd=6),("nginx",pid=693,fd=6),("nginx",pid=692,fd=6),("nginx",pid=691,fd=6),("nginx",pid=690,fd=6),("nginx",pid=689,fd=6),("nginx",pid=688,fd=6),("nginx",pid=687,fd=6),("nginx",pid=686,fd=6),("nginx",pid=685,fd=6),("nginx",pid=684,fd=6),("nginx",pid=683,fd=6),("nginx",pid=682,fd=6),("nginx",pid=681,fd=6),("nginx",pid=680,fd=6),("nginx",pid=679,fd=6),("nginx",pid=678,fd=6),("nginx",pid=677,fd=6),("nginx",pid=676,fd=6),("nginx",pid=675,fd=6),("nginx",pid=674,fd=6),("nginx",pid=673,fd=6),("nginx",pid=672,fd=6),("nginx",pid=671,fd=6),("nginx",pid=670,fd=6),("nginx",pid=669,fd=6),("nginx",pid=668,fd=6),("nginx",pid=667,fd=6),("nginx",pid=666,fd=6))
+
+
+
+4.  Start the httpd service & check the status.      
+
+[root@stbkp01 ~]# systemctl start iptables
+
+[root@stbkp01 ~]# systemctl status iptables
+
+● iptables.service - IPv4 firewall with iptables
+
+   Loaded: loaded (/usr/lib/systemd/system/iptables.service; disabled; vendor preset: disabled)
+
+   Active: active (exited) since Sun 2021-07-18 07:25:59 UTC; 7s ago
+
+  Process: 896 ExecStart=/usr/libexec/iptables/iptables.init start (code=exited, status=0/SUCCESS)
+
+ Main PID: 896 (code=exited, status=0/SUCCESS)
+
+ Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: iptables.service changed dead -> start
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: Starting IPv4 firewall with iptables...
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[896]: Executing: /usr/libexec/iptables/iptables.init start
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com iptables.init[896]: iptables: Applying firewall rules: [  OK  ]
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: Child 896 belongs to iptables.service
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: iptables.service: main process exited, code=exited...ESS
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: iptables.service changed start -> exited
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: Job iptables.service/start finished, result=done
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: Started IPv4 firewall with iptables.
+
+Jul 18 07:25:59 stbkp01.stratos.xfusioncorp.com systemd[1]: iptables.service: cgroup is empty
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+
+5. Add below IPtables Rules as per your task ( Please check port no as per your task)
+
+[root@stbkp01 ~]# iptables -A INPUT -p tcp --dport 8094 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+
+[root@stbkp01 ~]# iptables -A INPUT -p tcp --dport 3000 -m conntrack --ctstate NEW -j REJECT
+
+
+
+
+6.  There is by default Rule 5 to Reject all request check & change to ICMP
+
+[root@stbkp01 ~]# iptables -L --line-numbers
+
+Chain INPUT (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+1    ACCEPT     all  --  anywhere             anywhere             state RELATED,ESTABLISHED
+
+2    ACCEPT     icmp --  anywhere             anywhere           
+
+3    ACCEPT     all  --  anywhere             anywhere           
+
+4    ACCEPT     tcp  --  anywhere             anywhere             state NEW tcp dpt:ssh
+
+5    REJECT     all  --  anywhere             anywhere             reject-with icmp-host-prohibited
+
+6    ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:8094 ctstate NEW,ESTABLISHED
+
+7    REJECT     tcp  --  anywhere             anywhere             tcp dpt:hbci ctstate NEW reject-with icmp-port-unreachable
+
+ 
+
+Chain FORWARD (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+1    REJECT     all  --  anywhere             anywhere             reject-with icmp-host-prohibited
+
+ 
+
+Chain OUTPUT (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+
+
+[root@stbkp01 ~]# iptables -R INPUT 5 -p icmp -j REJECT
+
+
+
+
+
+7. Finally saved the rules to ensure they remain persistent across reboot
+
+ [root@stbkp01 ~]#service iptables save
+
+iptables: Saving firewall rules to /etc/sysconfig/iptables:[  OK  ]
+
+
+
+[root@stbkp01 ~]# iptables -L --line-numbers
+
+Chain INPUT (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+1    ACCEPT     all  --  anywhere             anywhere             state RELATED,ESTABLISHED
+
+2    ACCEPT     icmp --  anywhere             anywhere            
+
+3    ACCEPT     all  --  anywhere             anywhere           
+
+4    ACCEPT     tcp  --  anywhere             anywhere             state NEW tcp dpt:ssh
+
+5    REJECT     icmp --  anywhere             anywhere             reject-with icmp-port-unreachable
+
+6    ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:8094 ctstate NEW,ESTABLISHED
+
+7    REJECT     tcp  --  anywhere             anywhere             tcp dpt:hbci ctstate NEW reject-with icmp-port-unreachable
+
+ 
+
+Chain FORWARD (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+1    REJECT     all  --  anywhere             anywhere             reject-with icmp-host-prohibited
+
+ 
+
+Chain OUTPUT (policy ACCEPT)
+
+num  target     prot opt source               destination        
+
+
+
+      
+8.  Validate Ngnix port reachable from JumpServer as per the task request
+
+thor@jump_host ~$ telnet stbkp01 3000
+
+Trying 172.16.238.16...
+
+telnet: connect to address 172.16.238.16: Connection refused
+
+
+
+thor@jump_host ~$ telnet stbkp01 8094
+
+Trying 172.16.238.16...
+
+Connected to stbkp01.
+
+Escape character is '^]'.
+ 

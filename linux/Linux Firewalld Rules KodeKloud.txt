@@ -1,0 +1,20 @@
+Question: The Nautilus system admins team recently deployed a web UI application for their backup utility running on the Nautilus backup server in Stratos Datacenter. The application is running on port 8083. They have firewalld installed on that server. The requirements that have come up include the following:
+Open all incoming connection on 8083/tcp port. Zone should be public.
+
+
+Answer:
+
+Login to Backup Server
+
+ssh clint@172.16.238.16
+
+
+sudo firewall-cmd --permanent --zone=public --add-port=8083/tcp
+
+sudo firewall-cmd --reload
+
+sudo systemctl restart firewalld
+
+
+sudo firewall-cmd --zone=public --list-all 
+

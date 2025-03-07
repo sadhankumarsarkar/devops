@@ -1,0 +1,179 @@
+Question :  During the monthly compliance meeting, it was pointed out that several servers in the Stratos DC do not have a valid banner. The security team has provided serveral approved templates which should be applied to the servers to maintain compliance. These will be displayed to the user upon a successful login.
+
+Update the message of the day on all application and db servers for Nautilus. Make use of the approved template located at /tmp/nautilus_banner on jump host
+
+
+Solution:  
+
+1.  Copy the /tmp/nautilus_banner using scp command from jumpserver to all Apps & DB servers.
+
+thor@jump_host /$ ll /tmp/nautilus_banner
+
+-rw-r--r-- 1 root root 2531 Jun 26 15:39 /tmp/nautilus_banner
+
+
+thor@jump_host /$ scp -r  /tmp/nautilus_banner  tony@stapp01:/tmp
+
+
+2. Login to all the App server  & switch to root user 
+
+Now move copied file banner  /tmp to /etc/motd 
+
+thor@jump_host /$ ssh tony@stapp01
+
+
+
+[tony@stapp01 ~]$ sudo su -
+
+[root@stapp01 ~]# mv /tmp/nautilus_banner  /etc/motd
+
+mv: overwrite ‘/etc/motd’? yes
+
+[root@stapp01 ~]#
+
+
+3. Validate the open new terminal and login with user 
+
+thor@jump_host /$ ssh tony@stapp01
+
+
+Last login: Sat Jun 26 15:46:03 2021 from jump_host.linux-banner_app_net
+
+################################################################################################
+
+  .__   __.      ___      __    __  .___________. __   __       __    __       _______.        #
+
+       |  \ |  |     /   \    |  |  |  | |           ||  | |  |     |  |  |  |     /       |   #
+
+       |   \|  |    /  ^  \   |  |  |  | `---|  |----`|  | |  |     |  |  |  |    |   (----`   #
+
+       |  . `  |   /  /_\  \  |  |  |  |     |  |     |  | |  |     |  |  |  |     \   \       #
+
+       |  |\   |  /  _____  \ |  `--'  |     |  |     |  | |  `----.|  `--'  | .----)   |      #
+
+       |__| \__| /__/     \__\ \______/      |__|     |__| |_______| \______/  |_______/       #
+
+                                                                                               #
+
+                                                                                               #
+
+                                                                                               #
+
+                                                                                               #
+
+                                 # #  ( )                                                      #
+
+                                  ___#_#___|__                                                 #
+
+                              _  |____________|  _                                             #
+
+                       _=====| | |            | | |==== _                                      #
+
+                 =====| |.---------------------------. | |====                                 #
+
+   <--------------------'   .  .  .  .  .  .  .  .   '--------------/                          #
+
+     \                                                             /                           #
+
+      \_______________________________________________WWS_________/                            #
+
+  wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                        #
+
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                       #
+
+   wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                         #
+
+                                                                                               #
+
+                                                                                               #
+
+################################################################################################
+
+Warning! All Nautilus systems are monitored and audited. Logoff immediately if you are not authorized!
+
+
+
+Please Note :- showed only for stapp01 have to do this in all app server stapp01,stapp02, stapp03.
+
+
+While copying file on DB server you will faced issue due to openssh-clients package not installed.
+
+
+1. Login on DB server  &  Install openssh-clients
+
+thor@jump_host /$ ssh peter@stdb01
+
+[peter@stdb01 ~]$ sudo su -
+
+
+2.  Copy the /tmp/nautilus_banner using scp command from jumpserver 
+
+thor@jump_host /$ scp -r  /tmp/nautilus_banner  peter@stdb01:/tmp
+
+
+3. Now move copied file banner  /tmp to /etc/motd 
+
+[root@stdb01 ~]# mv /tmp/nautilus_banner  /etc/motd
+
+mv: overwrite ‘/etc/motd’? yes
+
+
+
+4.  Validate  login all the server's & check banner implemented successfully as per the task request
+
+thor@jump_host /$ ssh peter@stdb01
+
+
+Last login: Sat Jun 26 15:53:55 2021 from jump_host.linux-banner_db_net
+
+################################################################################################
+
+  .__   __.      ___      __    __  .___________. __   __       __    __       _______.        #
+
+       |  \ |  |     /   \    |  |  |  | |           ||  | |  |     |  |  |  |     /       |   #
+
+       |   \|  |    /  ^  \   |  |  |  | `---|  |----`|  | |  |     |  |  |  |    |   (----`   #
+
+       |  . `  |   /  /_\  \  |  |  |  |     |  |     |  | |  |     |  |  |  |     \   \       #
+
+       |  |\   |  /  _____  \ |  `--'  |     |  |     |  | |  `----.|  `--'  | .----)   |      #
+
+       |__| \__| /__/     \__\ \______/      |__|     |__| |_______| \______/  |_______/       #
+
+                                                                                               #
+
+                                                                                               #
+
+                                                                                               #
+
+                                                                                               #
+
+                                 # #  ( )                                                      #
+
+                                  ___#_#___|__                                                 #
+
+                              _  |____________|  _                                             #
+
+                       _=====| | |            | | |==== _                                      #
+
+                 =====| |.---------------------------. | |====                                 #
+
+   <--------------------'   .  .  .  .  .  .  .  .   '--------------/                          #
+
+     \                                                             /                           #
+
+      \_______________________________________________WWS_________/                            #
+
+  wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                        #
+
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                       #
+
+   wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww                         #
+
+                                                                                               #
+
+                                                                                               #
+
+################################################################################################
+
+Warning! All Nautilus systems are monitored and audited. Logoff immediately if you are not authorized!

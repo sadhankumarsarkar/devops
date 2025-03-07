@@ -1,0 +1,156 @@
+Question :  During a recent security audit, the application security team of xFusionCorp Industries found security issues with the Apache web server on Nautilus App Server 1 server in Stratos DC. They have listed several security issues that need to be fixed on this server. Please apply the security settings below:
+
+a. On Nautilus App Server 1 it was identified that the Apache web server is exposing the version number. Ensure this server has the appropriate settings to hide the version number of the Apache web server.
+
+b. There is a website hosted under /var/www/html/media on App Server 1. It was detected that the directory /media lists all of its contents while browsing the URL. Disable the directory browser listing in Apache config.
+
+c. Also make sure to restart the Apache service after making the changes.
+
+Please Note:-  Perform the below commands based on your question server,  user name & other details that might differ. So please read the task carefully before executing it. All the Best 👍
+
+
+
+Solution:  
+
+1. At first login on app server  & Switch to root user 
+
+thor@jump_host ~$ ssh tony@stapp01
+
+[tony@stapp01 ~]$ sudo su -
+
+
+2. Run the Below command to check the existing Apache HTTPd service status     
+
+[root@stapp01 ~]# systemctl status httpd
+
+● httpd.service - The Apache HTTP Server
+
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+
+   Active: inactive (dead)
+
+     Docs: man:httpd(8)
+
+           man:apachectl(8)
+
+
+
+4. Confirm the existing config
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep ServerTokens
+
+
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep ServerSignature
+
+
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep Indexes
+
+    #   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+
+    Options Indexes FollowSymLinks
+
+
+
+5. Edit the  /etc/httpd/conf/httpd.conf  file and Added below lines end of config file & Save it
+
+Also Modified Options  +FollowSymLinks ( go through video for more details)
+
+[root@stapp01 ~]# vi /etc/httpd/conf/httpd.conf
+
+
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep ServerTokens
+
+ServerTokens Prod
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep ServerSignature
+
+ServerSignature Off
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf  |grep Indexes
+
+    #   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+
+
+
+6. Post saved config file, start the httpd services
+
+[root@stapp01 ~]# systemctl start httpd
+
+[root@stapp01 ~]# systemctl status httpd
+
+● httpd.service - The Apache HTTP Server
+
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+
+   Active: active (running) since Thu 2021-07-15 14:37:28 UTC; 6s ago
+
+     Docs: man:httpd(8)
+
+           man:apachectl(8)
+
+ Main PID: 796 (httpd)
+
+   Status: "Processing requests..."
+
+   CGroup: /docker/e977d94b05a9ec0209ea709527cd1db1b02061cf5404540627e144b44bb61361/system.slice/httpd.service
+
+           ├─796 /usr/sbin/httpd -DFOREGROUND
+
+           ├─798 /usr/sbin/httpd -DFOREGROUND
+
+           ├─799 /usr/sbin/httpd -DFOREGROUND
+
+           ├─800 /usr/sbin/httpd -DFOREGROUND
+
+           ├─801 /usr/sbin/httpd -DFOREGROUND
+
+           └─802 /usr/sbin/httpd -DFOREGROUND
+
+ Jul 15 14:37:28 stapp01.stratos.xfusioncorp.com systemd[1]: Starting The Apache HTTP Server...
+
+Jul 15 14:37:28 stapp01.stratos.xfusioncorp.com httpd[796]: AH00558: httpd: Could not reliably determine the server's fully qualifi...ssage
+
+Jul 15 14:37:28 stapp01.stratos.xfusioncorp.com systemd[1]: Started The Apache HTTP Server.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+7.  Validate Apache httpd running  as per the task request
+
+
+[root@stapp01 ~]# curl -I http://stapp01:8080
+
+HTTP/1.1 200 OK
+
+Date: Thu, 15 Jul 2021 14:38:41 GMT
+
+Server: Apache
+
+Last-Modified: Thu, 30 Nov 2017 23:11:00 GMT
+
+ETag: "1a4-55f3b5d810900"
+
+Accept-Ranges: bytes
+
+Content-Length: 420
+
+Content-Type: text/html; charset=UTF-8
+
+
+
+[root@stapp01 ~]# curl -I http://stapp01:8080/media
+
+HTTP/1.1 301 Moved Permanently
+
+Date: Thu, 15 Jul 2021 14:39:24 GMT
+
+Server: Apache
+
+Location: http://stapp01:8080/media/
+
+Content-Type: text/html; charset=iso-8859-1
+

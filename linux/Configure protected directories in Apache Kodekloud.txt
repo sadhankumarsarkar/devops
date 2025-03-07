@@ -1,0 +1,49 @@
+Solution :
+
+Login to server
+
+ssh banner@stapp03  
+
+Add a user and set password
+
+sudo htpasswd -c /etc/httpd/.htpasswd james
+
+Restart
+
+sudo systemctl restart httpd
+
+Edit configuration
+
+sudo vi /etc/httpd/conf/httpd.conf 
+
+Scroll down to the <Directory> section for "/var/www/html" and change  
+
+AllowOverride to All
+
+Create mentioned Directory
+
+mkdir /var/www/html/sysops 
+
+Go to sysops directory and create .htaccess file
+
+sudo vi .htaccess
+
+Give this configuration
+
+AuthType Basic
+AuthName "Password Required"
+Require valid-user
+AuthUserFile /etc/httpd/.htpasswd
+
+
+Now go to jump server and copy index file
+
+ scp /tmp/index.html banner@stapp03:/tmp
+
+Again copy from tmp folder to mentioned directory
+
+cp /tmp/index.html /var/www/html/sysops
+
+Check by typing this curl command
+
+curl -u james http://127.0.0.1:8080/sysops/index.html

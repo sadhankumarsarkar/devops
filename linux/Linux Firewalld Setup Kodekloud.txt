@@ -1,0 +1,51 @@
+Solution:
+
+You need to do the task in all app servers.
+
+At first start from stapp01 server
+
+ssh tony@stapp01
+
+sudo su
+
+Then check apache and nginx service status
+
+systemctl status httpd &&  systemctl status nginx
+
+Next, find the apache and nginx port number
+
+ 
+grep -i Listen /etc/httpd/conf/ht*  /etc/nginx/nginx.conf
+
+Then install firewalld
+
+ 
+yum install -y firewalld
+
+Enable and check status
+
+systemctl start firewalld && systemctl enable firewalld && systemctl status firewalld
+
+Now allow the nginx port that you got from finding port number before 
+
+ 
+firewall-cmd --permanent --zone=public --add-port=8091/tcp
+
+Allow http and https
+
+ 
+firewall-cmd --permanent --zone=public --add-service={http,https}
+
+Allow the httpd port also
+
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source                 address=172.16.238.14 port protocol=tcp port=8087 accept'
+
+
+Reload and restart firewalld
+
+firewall-cmd --reload && systemctl restart firewalld && firewall-cmd --zone=public --list-all
+
+ 
+
+
+Finally, go to stapp02 and stapp03 server and do the same.

@@ -1,0 +1,208 @@
+Question :  xFusionCorp Industries utilizes monitoring tools to check the status of every service, application, etc. running on the systems. The monitoring system identified that Apache service is not running on some of the Nautilus Application Servers in Stratos Datacenter.
+
+Identify the faulty Nautilus Application Servers and fix the issue. Also, make sure Apache service is up and running on all Nautilus Application Servers. Do not try to stop any kind of firewall that is already running.
+
+Apache is running on 8089 port on all Nautilus Application Servers and its document root must be /var/www/html on all app servers.
+
+Finally you can test from jump host using curl command to access Apache on all app servers and it should be reachable and you should get some page (it can be just an HTML or PHP page as it is). E.g. curl http://172.16.238.10:8089/
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+1. At first login on App server  & Switch to  root user 
+
+thor@jump_host ~$ ssh tony@stapp01
+
+[tony@stapp01 ~]$ sudo su -
+
+
+2. Run Below command to start  Apache httpd service ,while start you may get below error.
+
+[root@stapp01 ~]#  systemctl start httpd
+
+Job for httpd.service failed because the control process exited with error code. See "systemctl status httpd.service" and "journalctl -xe" for details.
+
+
+
+3. check the systemctl status httpd to know the reason of service failed.
+
+      In below snipping for line no 31 I have syntax error( please check yours error)
+
+
+[root@stapp01 ~]#  systemctl status  httpd.service
+
+● httpd.service - The Apache HTTP Server
+
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+
+   Active: failed (Result: exit-code) since Tue 2021-07-13 11:38:27 UTC; 20s ago
+
+     Docs: man:httpd(8)
+
+           man:apachectl(8)
+
+  Process: 702 ExecStop=/bin/kill -WINCH ${MAINPID} (code=exited, status=1/FAILURE)
+
+  Process: 701 ExecStart=/usr/sbin/httpd $OPTIONS -DFOREGROUND (code=exited, status=1/FAILURE)
+
+ Main PID: 701 (code=exited, status=1/FAILURE)
+
+ Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: Starting The Apache HTTP Server...
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com httpd[701]: httpd: Syntax error on line 31 of /etc/httpd/conf/...ory
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: httpd.service: main process exited, code=exited, s...URE
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com kill[702]: kill: cannot find process ""
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: httpd.service: control process exited, code=exited...s=1
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: Failed to start The Apache HTTP Server.
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: Unit httpd.service entered failed state.
+
+Jul 13 11:38:27 stapp01.stratos.xfusioncorp.com systemd[1]: httpd.service failed.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+
+4.  You can cat the file with line no to check the syntax issue
+
+[root@stapp01 ~]# cat -n  /etc/httpd/conf/httpd.conf  |grep 31
+
+    31  ServerRoot "/etc/httpd;"
+
+   131  <Directory "/var/www/html">
+
+   231      # Example:
+
+
+
+
+5. Edit the  conf  file and correct the changes as per below
+    Note : - syntax error would differ so please check your error. you can go through  below video for better understanding.
+
+[root@stapp01 ~]# vi /etc/httpd/conf/httpd.conf
+
+
+
+[root@stapp01 ~]# cat -n  /etc/httpd/conf/httpd.conf  |grep 31
+
+    31  ServerRoot "/etc/httpd"
+
+   131  <Directory "/var/www/html">
+
+   231      # Example:
+
+
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf |grep DocumentRoot
+
+# DocumentRoot: The directory out of which you will serve your
+
+DocumentRoot "/var/www/html"
+
+# access content that does not live under the DocumentRoot.
+
+
+
+[root@stapp01 ~]# cat /etc/httpd/conf/httpd.conf |grep Listen
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 8089
+
+
+
+
+6.  Save the file and start the httpd service & check the status.
+      
+[root@stapp01 ~]# systemctl start httpd  &&  systemctl  status httpd
+
+● httpd.service - The Apache HTTP Server
+
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+
+   Active: active (running) since Tue 2021-07-13 11:46:03 UTC; 6ms ago
+
+     Docs: man:httpd(8)
+
+           man:apachectl(8)
+
+  Process: 702 ExecStop=/bin/kill -WINCH ${MAINPID} (code=exited, status=1/FAILURE)
+
+ Main PID: 749 (httpd)
+
+   Status: "Processing requests..."
+
+   CGroup: /docker/25f15cda7f79888c3a5e7f7d8fa66ec7e9cfff2d574bd129261c4faf1740de39/system.slice/httpd.service
+
+           ├─749 /usr/sbin/httpd -DFOREGROUND
+
+           ├─751 /usr/sbin/httpd -DFOREGROUND
+
+           ├─753 /usr/sbin/httpd -DFOREGROUND
+
+           ├─754 /usr/sbin/httpd -DFOREGROUND
+
+           ├─755 /usr/sbin/httpd -DFOREGROUND
+
+           └─756 /usr/sbin/httpd -DFOREGROUND
+
+ Jul 13 11:46:03 stapp01.stratos.xfusioncorp.com systemd[1]: Starting The Apache HTTP Server...
+
+Jul 13 11:46:03 stapp01.stratos.xfusioncorp.com httpd[749]: AH00558: httpd: Could not reliably determine the s...age
+
+Jul 13 11:46:03 stapp01.stratos.xfusioncorp.com systemd[1]: Started The Apache HTTP Server.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+      
+7.  Validate Apache httpd running  as per the task request
+
+thor@jump_host ~$ curl http://172.16.238.10:8089/
+
+<?php
+
+/**
+
+ * Front to the WordPress application. This file doesn't do anything, but loads
+
+ * wp-blog-header.php which does and tells WordPress to load the theme.
+
+ *
+
+ * @package WordPress
+
+ */
+
+ /**
+
+ * Tells WordPress to load the WordPress theme and output it.
+
+ *
+
+ * @var bool
+
+ */
+
+define( 'WP_USE_THEMES', true );
+
+ /** Loads the WordPress Environment and Template */
+
+require( dirname( __FILE__ ) . '/wp-blog-header.php' );
+
+
+
+    
+Please Note :- showed only for stapp01 have to do this in all app server stapp01,stapp02, stapp03. 

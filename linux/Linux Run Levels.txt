@@ -1,0 +1,41 @@
+Question : New tools have been installed on the app server in Stratos Datacenter. Some of these tools can only be managed from the graphical user interface. Therefore, there are requirements for these app servers.
+On all App servers in Stratos Datacenter change the default runlevel so that they can boot in GUI (graphical user interface) by default.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+1. At first login on all app servers   & Switch to  root user
+
+
+thor@jump_host ~$  ssh tony@stapp01
+
+[tony@stapp01 ~]$ sudo su -
+[root@stapp01 ~]# systemctl get-default
+
+multi-user.target
+
+4. Run Below command to change the run level to graphical.target
+        
+[root@stapp01 ~]# systemctl set-default graphical.target
+
+Removed symlink /etc/systemd/system/default.target
+
+Created symlink from /etc/systemd/system/default.target to /usr/lib/systemd/system/graphical.target.
+
+
+5. Post set default start graphical service & validate  the status
+
+[root@stapp01 ~]# systemctl status graphical.traget
+
+[root@stapp01 ~]# systemctl start graphical.target
+
+[root@stapp01 ~]# systemctl status graphical.target
+
+[root@stapp01 ~]# systemctl get-default
+
+graphical.target
+
+
+Please Note :- Showed only for stapp01 have to do this in all app server  stapp01,stapp02, stapp03.

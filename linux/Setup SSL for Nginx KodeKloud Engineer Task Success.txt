@@ -1,0 +1,443 @@
+Question : The system admins team of xFusionCorp Industries needs to deploy a new application on App Server 3 in Stratos Datacenter. They have some pre-requites to get ready that server for application deployment. Prepare the server as per requirements shared below:
+
+Install and configure nginx on App Server 3.
+
+On App Server 3 there is a self signed SSL certificate and key present at location /tmp/nautilus.crt and /tmp/nautilus.key. Move them to some appropriate location and deploy the same in Nginx.
+
+Create an index.html file with content Welcome! under Nginx document root.
+
+For final testing try to access the App Server 3 link (either hostname or IP) from jump host using curl command. For example curl -Ik https://<app-server-ip>/.
+
+Please Note :-  Perform the below commands based on your question server,  user name & other details that might differ as per the task.
+
+
+Solution:  
+
+1. At first login on App server as per the task &  Switch to  root user
+
+thor@jump_host ~$ ssh banner@stapp03
+
+[banner@stapp03 ~]$ sudo su -
+
+
+2. Run Below command to install  epel repo & Nginx package    
+
+[root@stapp03 ~]# yum install   epel-release -y
+
+Loaded plugins: fastestmirror, ovl
+
+Loading mirror speeds from cached hostfile
+
+ * base: mirror.mobap.edu
+
+ * extras: mirrors.gigenet.com
+
+ * updates: linux-mirrors.fnal.gov
+
+Resolving Dependencies
+
+--> Running transaction check
+
+---> Package epel-release.noarch 0:7-11 will be installed
+
+--> Finished Dependency Resolution
+
+ Dependencies Resolved
+
+ ======================================================================================================================
+
+ Package                         Arch                      Version                    Repository                 Size
+
+======================================================================================================================
+
+Installing:
+
+ epel-release                    noarch                    7-11                       extras                     15 k
+
+ 
+
+Transaction Summary
+
+======================================================================================================================
+
+Install  1 Package
+
+ Total download size: 15 k
+
+Installed size: 24 k
+
+Downloading packages:
+
+epel-release-7-11.noarch.rpm                                                                   |  15 kB  00:00:00    
+
+Running transaction check
+
+Running transaction test
+
+Transaction test succeeded
+
+Running transaction
+
+  Installing : epel-release-7-11.noarch                                                                           1/1
+
+  Verifying  : epel-release-7-11.noarch                                                                           1/1
+
+ 
+
+Installed:
+
+  epel-release.noarch 0:7-11                                                                                         
+
+ Complete!
+
+
+[root@stapp03 ~]# yum install   nginx -y
+
+Loaded plugins: fastestmirror, ovl
+
+Loading mirror speeds from cached hostfile
+
+epel/x86_64/metalink                                                                           |  12 kB  00:00:00    
+
+ * base: mirror.mobap.edu
+
+ * epel: mirror.genesisadaptive.com
+
+ * extras: mirrors.gigenet.com
+
+ * updates: linux-mirrors.fnal.gov
+
+epel                                                                                           | 4.7 kB  00:00:00    
+
+(1/3): epel/x86_64/group_gz                                                                    |  96 kB  00:00:00    
+
+(2/3): epel/x86_64/updateinfo                                                                  | 1.0 MB  00:00:00    
+
+(3/3): epel/x86_64/primary_db                                                                  | 6.9 MB  00:00:04    
+
+Resolving Dependencies
+
+--> Running transaction check
+
+---> Package nginx.x86_64 1:1.20.1-2.el7 will be installed
+
+--> Processing Dependency: nginx-filesystem = 1:1.20.1-2.el7 for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: nginx-filesystem for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: openssl for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: redhat-indexhtml for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: system-logos for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: libcrypto.so.1.1()(64bit) for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: libprofiler.so.0()(64bit) for package: 1:nginx-1.20.1-2.el7.x86_64
+
+--> Processing Dependency: libssl.so.1.1()(64bit) for package: 1:nginx-1.20.1-2.el7.x86_64
+
+======================================================================================================================
+
+ Package                        Arch                 Version                              Repository             Size
+
+======================================================================================================================
+
+Installing:
+
+ nginx                          x86_64               1:1.20.1-2.el7                       epel                  586 k
+
+Installing for dependencies:
+
+ centos-indexhtml               noarch               7-9.el7.centos                       base                   92 k
+
+ centos-logos                   noarch               70.0.6-3.el7.centos                  base                   21 M
+
+ gperftools-libs                x86_64               2.6.1-1.el7                          base                  272 k
+
+ make                           x86_64               1:3.82-24.el7                        base                  421 k
+
+ nginx-filesystem               noarch               1:1.20.1-2.el7                       epel                   23 k
+
+ openssl                        x86_64               1:1.0.2k-21.el7_9                    updates               493 k
+
+ openssl11-libs                 x86_64               1:1.1.1g-3.el7                       epel                  1.5 M
+
+Updating for dependencies:
+
+ openssl-libs                   x86_64               1:1.0.2k-21.el7_9                    updates               1.2 M
+
+ 
+
+(9/9): centos-logos-70.0.6-3.el7.centos.noarch.rpm                                             |  21 MB  00:00:02    
+
+----------------------------------------------------------------------------------------------------------------------
+
+Total                                                                                  11 MB/s |  26 MB  00:00:02    
+
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+
+Importing GPG key 0x352C64E5:
+
+ Userid     : "Fedora EPEL (7) <epel@fedoraproject.org>"
+
+ Fingerprint: 91e9 7d7c 4a5e 96f1 7f3e 888f 6a2f aea2 352c 64e5
+
+ Package    : epel-release-7-11.noarch (@extras)
+
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+
+Running transaction check
+
+Running transaction test
+
+Transaction test succeeded
+
+Running transaction
+
+  Installing : centos-logos-70.0.6-3.el7.centos.noarch                                                           1/10
+
+  Installing : centos-indexhtml-7-9.el7.centos.noarch                                                            2/10
+
+  Installing : 1:make-3.82-24.el7.x86_64                                                                         3/10
+
+  Installing : 1:nginx-filesystem-1.20.1-2.el7.noarch                                                            4/10
+
+  Installing : 1:openssl11-libs-1.1.1g-3.el7.x86_64                                                              5/10
+
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7_6.1.x86_64                                                          10/10
+
+ Installed:
+
+  nginx.x86_64 1:1.20.1-2.el7                                                                                        
+
+ Complete!
+
+
+
+
+3. Edit Nginx conf  & do the changes  as below 
+
+( Refer to attached Video below for  better understanding) 
+
+ Note  Server_name  IP should be the as per your app server mentioned in the task
+
+
+[root@stapp03 ~]# vi /etc/nginx/nginx.conf
+
+[root@stapp03 ~]# cat /etc/nginx/nginx.conf
+
+server {
+
+        listen       80;
+
+        listen       [::]:80;
+
+        server_name  172.16.238.12;
+
+        root         /usr/share/nginx/html;
+
+ 
+
+        # Load configuration files for the default server block.
+
+        include /etc/nginx/default.d/*.conf;
+
+ 
+
+        error_page 404 /404.html;
+
+        location = /404.html {
+
+        }
+
+ 
+
+        error_page 500 502 503 504 /50x.html;
+
+        location = /50x.html {
+
+        }
+
+    }
+
+ 
+
+# Settings for a TLS enabled server.
+
+ 
+
+    server {
+
+        listen       443 ssl http2;
+
+        listen       [::]:443 ssl http2;
+
+        server_name  172.16.238.12;
+
+        root         /usr/share/nginx/html;
+
+        ssl_certificate "/etc/pki/CA/certs/nautilus.crt";
+
+        ssl_certificate_key "/etc/pki/CA/private/nautilus.key";
+
+        ssl_session_cache shared:SSL:1m;
+
+        ssl_session_timeout  10m;
+
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        ssl_prefer_server_ciphers on;
+
+ 
+
+#        # Load configuration files for the default server block.
+
+        include /etc/nginx/default.d/*.conf;
+
+ 
+
+        error_page 404 /404.html;
+
+            location = /40x.html {
+
+        }
+
+ 
+
+        error_page 500 502 503 504 /50x.html;
+
+            location = /50x.html {
+
+        }
+
+    }
+
+ 
+
+}
+
+
+
+
+
+4. Once the configuration is saved then copy the certificates and key
+
+[root@stapp03 ~]# cp /tmp/nautilus.crt /etc/pki/CA/certs/
+
+[root@stapp03 ~]# cp /tmp/nautilus.key /etc/pki/CA/private/
+
+
+
+
+5. Create an index.html with the word Welcome! on Nginx document root
+   
+[root@stapp03 ~]# ll /usr/share/nginx/html/
+
+total 16
+
+-rw-r--r-- 1 root root 3650 Jun  2 00:21 404.html
+
+-rw-r--r-- 1 root root 3693 Jun  2 00:21 50x.html
+
+lrwxrwxrwx 1 root root   20 Jul 25 11:56 en-US -> ../../doc/HTML/en-US
+
+drwxr-xr-x 2 root root 4096 Jul 25 11:56 icons
+
+lrwxrwxrwx 1 root root   18 Jul 25 11:56 img -> ../../doc/HTML/img
+
+lrwxrwxrwx 1 root root   25 Jul 25 11:56 index.html -> ../../doc/HTML/index.html
+
+-rw-r--r-- 1 root root  368 Jun  2 00:21 nginx-logo.png
+
+lrwxrwxrwx 1 root root   14 Jul 25 11:56 poweredby.png -> nginx-logo.png
+
+
+
+[root@stapp03 ~]# rm /usr/share/nginx/html/index.html
+
+rm: remove symbolic link ‘/usr/share/nginx/html/index.html’? y
+
+
+
+[root@stapp03 ~]# vi /usr/share/nginx/html/index.html
+
+[root@stapp03 ~]# cat /usr/share/nginx/html/index.html
+
+Welcome!
+
+
+
+
+6. Start  & check the status of  the Nginx service 
+
+[root@stapp03 ~]# systemctl start nginx
+
+[root@stapp03 ~]# systemctl status nginx
+
+● nginx.service - The nginx HTTP and reverse proxy server
+
+   Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; vendor preset: disabled)
+
+   Active: active (running) since Sun 2021-07-25 12:30:18 UTC; 3s ago
+
+  Process: 1229 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+
+  Process: 1221 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)
+
+  Process: 1220 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+
+ Main PID: 1237 (nginx)
+
+   CGroup: /docker/70d05fde1661603ba89e428665c1c974cbfc1fc4cb9b22b14e3bc2e2c8e5f785/system.slice/nginx.service
+
+           ├─1237 nginx: master process /usr/sbin/nginx
+
+           ├─1238 nginx: worker process
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: Forked /usr/sbin/nginx as 1229
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: nginx.service changed start-pre -> start
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1229]: Executing: /usr/sbin/nginx
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: Child 1229 belongs to nginx.service
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: nginx.service: control process exited, code=exited s...s=0
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: nginx.service got final SIGCHLD for state start
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: Main PID loaded: 1237
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: nginx.service changed start -> running
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: Job nginx.service/start finished, result=done
+
+Jul 25 12:30:18 stapp03.stratos.xfusioncorp.com systemd[1]: Started The nginx HTTP and reverse proxy server.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+
+7. Validate the task  from JUMP server    
+     
+thor@jump_host ~$ curl -Ik https://stapp03
+
+HTTP/1.1 200 OK
+
+Server: nginx/1.20.1
+
+Date: Sun, 25 Jul 2021 12:32:39 GMT
+
+Content-Type: text/html
+
+Content-Length: 9
+
+Last-Modified: Sun, 25 Jul 2021 12:14:24 GMT
+
+Connection: keep-alive
+
+ETag: "60fd55a0-9"
+
+Accept-Ranges: bytes

@@ -1,0 +1,19 @@
+Solution:
+
+Login to all app servers one by one and run install command
+
+ssh tony@stapp01
+
+sudo yum install net-tools
+
+ 
+
+ssh steve@stapp02
+
+sudo yum install net-tools
+
+ 
+
+ssh banner@stapp03
+
+sudo yum install net-tools
